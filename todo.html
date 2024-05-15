@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced To-Do List</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+  input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #45a049;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .completed {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+  .delete-btn {
+    background-color: #f44336;
+  }
+</style>
+</head>
+<body>
+
+<h2>Advanced To-Do List</h2>
+
+<input type="text" id="taskInput" placeholder="Enter task">
+<button onclick="addTask()">Add Task</button>
+<button onclick="sortTasks()">Sort Tasks</button>
+
+<ul id="taskList">
+  <!-- Tasks will be added here -->
+</ul>
+
+<script>
+  // Function to add a task
+  function addTask() {
+    var input = document.getElementById("taskInput").value.trim();
+    if (input === '') {
+      alert("Please enter a task!");
+      return;
+    }
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.push({name: input, completed: false});
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    displayTasks();
+    document.getElementById("taskInput").value = '';
+  }
+
+  // Function to display tasks
+  function displayTasks() {
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    var taskList = document.getElementById("taskList");
+    taskList.innerHTML = '';
+    tasks.forEach(function(task, index) {
+      var li = document.createElement("li");
+      li.textContent = task.name;
+      if (task.completed) {
+        li.classList.add("completed");
+      }
+      li.addEventListener("click", function() {
+        toggleTask(index);
+      });
+      var deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.classList.add("delete-btn");
+      deleteBtn.addEventListener("click", function(event) {
+        event.stopPropagation();
+        deleteTask(index);
+      });
+      li.appendChild(deleteBtn);
+      taskList.appendChild(li);
+    });
+  }
+
+  // Function to toggle task completion
+  function toggleTask(index) {
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks[index].completed = !tasks[index].completed;
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    displayTasks();
+  }
+
+  // Function to delete a task
+  function deleteTask(index) {
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.splice(index, 1);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    displayTasks();
+  }
+
+  // Function to sort tasks
+  function sortTasks() {
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.sort(function(a, b) {
+      return a.name.localeCompare(b.name);
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    displayTasks();
+  }
+
+  // Initial display of tasks
+  displayTasks();
+</script>
+
+</body>
+</html>
